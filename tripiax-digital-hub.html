@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tripiax Digital Hub — Take a Number, Not a Chance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1a1a17;
+    --paper:#f6f1e7;
+    --paper-dim:#efe8d8;
+    --forest:#0b3d2e;
+    --forest-deep:#082b21;
+    --stamp:#a13a2b;
+    --brass:#a9822c;
+    --sage:#c9d6c0;
+    --line: rgba(26,26,23,0.16);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .display{font-family:'Fraunces', serif;}
+  .mono{font-family:'IBM Plex Mono', monospace; letter-spacing:0.02em;}
+
+  /* subtle paper grain */
+  body::before{
+    content:"";
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      radial-gradient(rgba(0,0,0,0.035) 1px, transparent 1px);
+    background-size: 3px 3px;
+    opacity:0.5;
+  }
+
+  .wrap{max-width:1120px; margin:0 auto; padding:0 24px; position:relative; z-index:1;}
+
+  /* ---- Nav ---- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(246,241,231,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{display:flex; align-items:center; justify-content:space-between; padding:18px 24px;}
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand-mark{
+    width:42px; height:42px; border-radius:3px;
+    background:var(--forest);
+    color:var(--paper);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-weight:700; font-size:20px;
+    border:1px solid var(--forest-deep);
+  }
+  .brand h1{font-size:20px; margin:0; letter-spacing:0.01em;}
+  .brand p{margin:0; font-size:11px; color:var(--forest); letter-spacing:0.14em; font-weight:600;}
+  nav a.navlink{color:var(--ink); text-decoration:none; font-size:14px; font-weight:500; margin-left:32px;}
+  nav a.navlink:hover{color:var(--forest);}
+  .cta-ticket{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--forest); color:var(--paper);
+    padding:10px 18px; border-radius:2px; text-decoration:none;
+    font-size:14px; font-weight:600;
+    border:1px dashed rgba(246,241,231,0.5);
+  }
+  @media(max-width:768px){ .navlinks{display:none;} }
+
+  /* ---- Hero ---- */
+  .hero{
+    padding:88px 0 72px;
+    border-bottom:1px solid var(--line);
+    position:relative;
+    overflow:hidden;
+  }
+  .hero-grid{display:grid; grid-template-columns:1.15fr 0.85fr; gap:56px; align-items:center;}
+  @media(max-width:900px){ .hero-grid{grid-template-columns:1fr;} }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--forest); margin-bottom:22px;
+  }
+  .eyebrow .dot{width:7px; height:7px; border-radius:50%; background:var(--stamp);}
+  .hero h2{
+    font-size:clamp(2.6rem, 5.6vw, 4.4rem);
+    line-height:1.03; font-weight:600; margin:0 0 22px; letter-spacing:-0.01em;
+  }
+  .hero h2 em{font-style:italic; color:var(--forest);}
+  .hero p.lead{font-size:18px; line-height:1.6; color:#3a382f; max-width:46ch; margin:0 0 32px;}
+  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--forest); color:var(--paper); text-decoration:none;
+    padding:16px 28px; font-weight:600; font-size:15px; border-radius:2px;
+    display:inline-flex; align-items:center; gap:10px;
+  }
+  .btn-ghost{
+    border:1px solid var(--ink); color:var(--ink); text-decoration:none;
+    padding:16px 28px; font-weight:600; font-size:15px; border-radius:2px;
+  }
+
+  /* ticket stub visual in hero */
+  .ticket{
+    background:var(--forest); color:var(--paper);
+    border-radius:6px;
+    position:relative;
+    box-shadow:0 30px 60px -20px rgba(11,61,46,0.45);
+    padding:30px 28px 26px;
+  }
+  .ticket::before, .ticket::after{
+    content:""; position:absolute; width:22px; height:22px; background:var(--paper);
+    border-radius:50%; top:50%; transform:translateY(-50%);
+  }
+  .ticket::before{ left:-11px; }
+  .ticket::after{ right:-11px; }
+  .ticket .stub-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:18px;}
+  .ticket .stub-top span.small{font-size:11px; letter-spacing:0.14em; opacity:0.75;}
+  .ticket .num{font-size:56px; font-weight:600; font-family:'Fraunces',serif; line-height:1;}
+  .ticket .perforation{border-top:2px dashed rgba(246,241,231,0.35); margin:18px 0;}
+  .ticket .rows div{display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-bottom:1px solid rgba(246,241,231,0.12);}
+  .ticket .rows div span.mono{opacity:0.85;}
+
+  /* ---- Section labels ---- */
+  .section-head{margin-bottom:52px;}
+  .section-head .eyebrow{margin-bottom:14px;}
+  .section-head h3{font-size:clamp(2rem,3.4vw,2.7rem); font-weight:600; margin:0 0 10px; letter-spacing:-0.01em;}
+  .section-head p{color:#4a473c; font-size:16px; max-width:52ch; margin:0;}
+
+  /* ---- Services (window stubs) ---- */
+  .services{padding:96px 0; border-bottom:1px solid var(--line);}
+  .service-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+  @media(max-width:900px){ .service-grid{grid-template-columns:repeat(2,1fr);} }
+  @media(max-width:600px){ .service-grid{grid-template-columns:1fr;} }
+  .service-cell{
+    background:var(--paper); padding:34px 28px; min-height:210px;
+    display:flex; flex-direction:column; justify-content:space-between;
+    transition:background 0.25s ease;
+  }
+  .service-cell:hover{background:var(--paper-dim);}
+  .window-tag{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:11px; font-weight:600; letter-spacing:0.1em;
+    color:var(--forest); margin-bottom:18px;
+  }
+  .service-cell h4{font-size:20px; margin:0 0 8px; font-weight:600; font-family:'Fraunces',serif;}
+  .service-cell p{font-size:14px; color:#4a473c; line-height:1.55; margin:0;}
+
+  /* ---- How it works: queue steps ---- */
+  .how{padding:96px 0; border-bottom:1px solid var(--line); background:var(--forest); color:var(--paper);}
+  .how .section-head p{color:rgba(246,241,231,0.75);}
+  .how .eyebrow{color:var(--sage);}
+  .queue{display:flex; overflow-x:auto; gap:0; counter-reset:step; padding-bottom:8px;}
+  .step{
+    flex:1 0 220px; position:relative; padding:0 28px 0 0;
+  }
+  .step:not(:last-child)::after{
+    content:"→"; position:absolute; right:0px; top:14px; opacity:0.35; font-size:20px;
+  }
+  .step .step-num{
+    font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--sage);
+    border:1px solid rgba(201,214,192,0.4); display:inline-block;
+    padding:3px 9px; border-radius:20px; margin-bottom:16px;
+  }
+  .step h5{font-size:18px; margin:0 0 8px; font-weight:600;}
+  .step p{font-size:14px; color:rgba(246,241,231,0.7); line-height:1.55; margin:0; padding-right:16px;}
+
+  /* ---- Trust strip ---- */
+  .trust{padding:56px 0; border-bottom:1px solid var(--line);}
+  .trust-row{display:grid; grid-template-columns:repeat(4,1fr); gap:24px; text-align:center;}
+  @media(max-width:700px){ .trust-row{grid-template-columns:repeat(2,1fr); gap:32px;} }
+  .trust-row .figure{font-family:'Fraunces',serif; font-size:2.4rem; font-weight:600; color:var(--forest);}
+  .trust-row .label{font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#4a473c; margin-top:6px;}
+
+  /* ---- Contact / stamp ---- */
+  .contact{padding:100px 0;}
+  .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center;}
+  @media(max-width:860px){ .contact-grid{grid-template-columns:1fr;} }
+  .stamp-wrap{display:flex; justify-content:center; align-items:center; position:relative;}
+  .stamp{
+    width:230px; height:230px; border-radius:50%;
+    border:3px double var(--stamp);
+    display:flex; align-items:center; justify-content:center;
+    transform:rotate(-8deg);
+    color:var(--stamp);
+    position:relative;
+  }
+  .stamp-inner{
+    width:190px; height:190px; border-radius:50%; border:1px solid var(--stamp);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+  }
+  .stamp-inner .top{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.2em; margin-bottom:8px;}
+  .stamp-inner .mid{font-family:'Fraunces',serif; font-weight:700; font-size:26px; letter-spacing:0.02em;}
+  .stamp-inner .bottom{font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; margin-top:8px;}
+
+  .contact-card{background:var(--forest); color:var(--paper); border-radius:6px; padding:38px 34px;}
+  .contact-card h4{font-family:'Fraunces',serif; font-size:1.8rem; margin:0 0 6px; font-weight:600;}
+  .contact-card .role{font-size:13px; color:var(--sage); margin-bottom:26px;}
+  .contact-line{display:flex; align-items:center; gap:12px; padding:12px 0; border-top:1px solid rgba(246,241,231,0.14);}
+  .contact-line a{color:var(--paper); text-decoration:none; font-size:15px;}
+  .contact-line .tag{font-size:11px; color:rgba(246,241,231,0.55); width:90px; flex-shrink:0; letter-spacing:0.08em; text-transform:uppercase;}
+  .whatsapp-btn{
+    margin-top:26px; display:flex; align-items:center; justify-content:center; gap:10px;
+    background:#f6f1e7; color:var(--forest); padding:16px; border-radius:3px;
+    text-decoration:none; font-weight:600; font-size:15px;
+  }
+
+  /* ---- Footer ---- */
+  footer{padding:34px 0; text-align:center; font-size:13px; color:#5a5748; border-top:1px solid var(--line);}
+
+  /* floating whatsapp */
+  .float-wa{
+    position:fixed; bottom:22px; right:22px; z-index:60;
+    background:#0b3d2e; color:#f6f1e7; width:56px; height:56px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; text-decoration:none;
+    box-shadow:0 10px 24px -6px rgba(0,0,0,0.35);
+    font-family:'IBM Plex Mono',monospace; font-size:11px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{scroll-behavior:auto !important;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <div class="brand">
+      <div class="brand-mark">T</div>
+      <div>
+        <h1>TRIPIAX</h1>
+        <p>DIGITAL HUB</p>
+      </div>
+    </div>
+    <nav class="navlinks">
+      <a class="navlink" href="#services">Services</a>
+      <a class="navlink" href="#how">How it works</a>
+      <a class="navlink" href="#contact">Contact</a>
+    </nav>
+    <a class="cta-ticket" href="#contact">Take a number →</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow"><span class="dot"></span> Nairobi · KRA, eCitizen &amp; NTSA agents</div>
+      <h2>Take a number,<br>not a <em>chance.</em></h2>
+      <p class="lead">Government and business paperwork, handled properly the first time — KRA, eCitizen, NTSA, HELB and company registration, done for you and delivered to your phone.</p>
+      <div class="hero-ctas">
+        <a class="btn-primary" href="https://wa.me/254702766712" target="_blank">Start on WhatsApp →</a>
+        <a class="btn-ghost" href="#services">See all services</a>
+      </div>
+    </div>
+    <div class="ticket">
+      <div class="stub-top">
+        <span class="small mono">TRIPIAX · QUEUE TICKET</span>
+        <span class="small mono">NRB</span>
+      </div>
+      <div class="num mono">N° 001</div>
+      <div class="perforation"></div>
+      <div class="rows">
+        <div><span>Service</span><span class="mono">KRA PIN</span></div>
+        <div><span>Status</span><span class="mono">READY</span></div>
+        <div><span>Turnaround</span><span class="mono">SAME DAY</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="services" id="services">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow"><span class="dot" style="background:#0b3d2e"></span> Service windows</div>
+      <h3>Six counters, one visit.</h3>
+      <p>Every window handles a different set of paperwork — pick the one you need, or tell us the problem and we'll route it correctly.</p>
+    </div>
+    <div class="service-grid">
+      <div class="service-cell">
+        <span class="window-tag mono">WINDOW 01 · KRA</span>
+        <div>
+          <h4>Tax &amp; KRA Services</h4>
+          <p>PIN registration, iTax returns, tax compliance certificates and KRA PIN retrieval.</p>
+        </div>
+      </div>
+      <div class="service-cell">
+        <span class="window-tag mono">WINDOW 02 · ECITIZEN</span>
+        <div>
+          <h4>eCitizen &amp; Immigration</h4>
+          <p>Passports, birth certificates, certificates of good conduct and national ID applications.</p>
+        </div>
+      </div>
+      <div class="service-cell">
+        <span class="window-tag mono">WINDOW 03 · NTSA</span>
+        <div>
+          <h4>NTSA Services</h4>
+          <p>Driving licences, vehicle ownership transfer, PSV badges and logbook processing.</p>
+        </div>
+      </div>
+      <div class="service-cell">
+        <span class="window-tag mono">WINDOW 04 · EDUCATION</span>
+        <div>
+          <h4>HELB, KUCCPS &amp; SHA</h4>
+          <p>Loan applications, course placement queries and health insurance (SHA) registration.</p>
+        </div>
+      </div>
+      <div class="service-cell">
+        <span class="window-tag mono">WINDOW 05 · BUSINESS</span>
+        <div>
+          <h4>Business Registration</h4>
+          <p>Business name and company registration, BRS filings and compliance documents.</p>
+        </div>
+      </div>
+      <div class="service-cell">
+        <span class="window-tag mono">WINDOW 06 · CREATIVE</span>
+        <div>
+          <h4>Creative &amp; Digital</h4>
+          <p>CV writing, graphic design and website development for your business or job search.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow"><span class="dot" style="background:#c9d6c0"></span> The process</div>
+      <h3>Four steps. No queueing in person.</h3>
+      <p>Everything happens over WhatsApp — you don't need to leave your house or take time off work.</p>
+    </div>
+    <div class="queue">
+      <div class="step">
+        <span class="step-num">01</span>
+        <h5>Tell us what you need</h5>
+        <p>Message us on WhatsApp with the service you're after.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">02</span>
+        <h5>Send your documents</h5>
+        <p>Share scans or photos of the required documents.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">03</span>
+        <h5>Pay via M-Pesa</h5>
+        <p>Secure payment once we've confirmed the service and cost.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">04</span>
+        <h5>We deliver</h5>
+        <p>Your finished documents arrive digitally or physically.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="trust">
+  <div class="wrap">
+    <div class="trust-row">
+      <div>
+        <div class="figure mono">6</div>
+        <div class="label">Service windows</div>
+      </div>
+      <div>
+        <div class="figure mono">100%</div>
+        <div class="label">Handled on WhatsApp</div>
+      </div>
+      <div>
+        <div class="figure mono">M-Pesa</div>
+        <div class="label">Payment only</div>
+      </div>
+      <div>
+        <div class="figure mono">NRB</div>
+        <div class="label">Based in Nairobi</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap contact-grid">
+    <div class="stamp-wrap">
+      <div class="stamp">
+        <div class="stamp-inner">
+          <span class="top">NAIROBI · KENYA</span>
+          <span class="mid">VERIFIED</span>
+          <span class="bottom">TRIPIAX DIGITAL HUB</span>
+        </div>
+      </div>
+    </div>
+    <div class="contact-card">
+      <h4>Gilbert Njonjo</h4>
+      <p class="role">Owner &amp; Lead Agent</p>
+      <div class="contact-line">
+        <span class="tag">Phone</span>
+        <a href="tel:0702766712">0702 766 712</a>
+      </div>
+      <div class="contact-line">
+        <span class="tag">Email</span>
+        <a href="mailto:gilbertnjonjo@gmail.com">gilbertnjonjo@gmail.com</a>
+      </div>
+      <a class="whatsapp-btn" href="https://wa.me/254702766712" target="_blank">Chat on WhatsApp →</a>
+    </div>
+  </div>
+</section>
+
+<a class="float-wa" href="https://wa.me/254702766712" target="_blank" aria-label="Chat on WhatsApp">WA</a>
+
+<footer>
+  © 2026 Tripiax Digital Hub · Nairobi, Kenya · Gilbert Njonjo
+</footer>
+
+</body>
+</html>
